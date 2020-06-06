@@ -1,10 +1,22 @@
 var app = require('express')();
 var http = require('http').createServer(app);
+const io = require("socket.io")(http);
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>');
+io.on('connection', socket => {
+  console.log('user: ' + socket.id + ' =====================> connected');
+  io.emit('userConnected', {userId: socket.id, nickname: ""});
+
+  socket.on('messageSend', (message) => {
+    console.log('user: ' + socket.id + ' send a message');
+    console.log('message: ' + message.message);
+    io.emit('messageData', {userId: socket.id, messageContent: message.message})
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user: ' + socket.id + ' =====================> disconnected');
+    io.emit('userDisconnected', {userId: socket.id, nickname: ""})
+  })
 });
 
-http.listen(3000, () => {
-  console.log('listening on :3000');
-});
+const PORT = process.env.PORT || 5000;
+http.listen(PORT, () => console.log(`Listen on: ${PORT}`));
