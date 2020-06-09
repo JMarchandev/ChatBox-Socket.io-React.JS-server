@@ -6,6 +6,12 @@ io.on('connection', socket => {
   console.log('user: ' + socket.id + ' =====================> connected');
   io.emit('userConnected', {userId: socket.id, nickname: ""});
 
+  socket.on('nicknameSend', (nickname) => {
+    console.log('user: ' + socket.id + ' changed nickname.');
+    console.log('nickname: ' + nickname.nickname);
+    io.emit('userNickname', {userId: socket.id, nickname: nickname.nickname})
+  });
+
   socket.on('messageSend', (message) => {
     console.log('user: ' + socket.id + ' send a message');
     console.log('message: ' + message.message);
